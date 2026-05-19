@@ -1,6 +1,26 @@
 import eventBus from "@/lib/eventBus";
 import { prisma } from "@/lib/prisma";
 
+type AssignmentRow = {
+  assignedAt: Date;
+  lead: {
+    id: number;
+    customerName: string;
+    phone: string;
+    city: string;
+    serviceId: number;
+    service: { name: string };
+  };
+};
+
+type ProviderRow = {
+  id: number;
+  name: string;
+  monthlyQuota: number;
+  leadsReceivedThisMonth: number;
+  assignments: AssignmentRow[];
+};
+
 export async function GET(request: Request) {
   const stream = new ReadableStream({
     async start(controller) {
@@ -14,7 +34,7 @@ export async function GET(request: Request) {
         startOfMonth.setDate(1);
         startOfMonth.setHours(0, 0, 0, 0);
 
-        const providers = await prisma.provider.findMany({
+        const providers = (await prisma.provider.findMany({
           include: {
             assignments: {
               where: {
@@ -34,7 +54,7 @@ export async function GET(request: Request) {
           orderBy: {
             id: "asc",
           },
-        });
+        })) as unknown as ProviderRow[];
 
         return providers.map((provider) => {
           const quotaUsed = provider.leadsReceivedThisMonth;
