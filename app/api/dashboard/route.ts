@@ -1,5 +1,20 @@
 import { NextResponse } from "next/server";
+import type { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
+
+type DashboardProvider = Prisma.ProviderGetPayload<{
+  include: {
+    assignments: {
+      include: {
+        lead: {
+          include: {
+            service: true;
+          };
+        };
+      };
+    };
+  };
+}>;
 
 export async function GET() {
   try {
@@ -7,7 +22,7 @@ export async function GET() {
     startOfMonth.setDate(1);
     startOfMonth.setHours(0, 0, 0, 0);
 
-    const providers = await prisma.provider.findMany({
+    const providers: DashboardProvider[] = await prisma.provider.findMany({
       include: {
         assignments: {
           where: {
