@@ -35,7 +35,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const lead = await runWithPrismaRetry(() =>
+    const lead = (await runWithPrismaRetry(() =>
       prisma.lead.create({
         data: {
           customerName,
@@ -45,7 +45,7 @@ export async function POST(request: Request) {
           serviceId,
         },
       }),
-    );
+    )) as { id: number; serviceId: number };
 
     let assignedProviders: Awaited<ReturnType<typeof assignProviders>> = [];
 
