@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import eventBus from "@/lib/eventBus";
 import { prisma } from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
 
 export async function POST(request: Request) {
   try {
@@ -15,7 +16,8 @@ export async function POST(request: Request) {
       );
     }
 
-    const result = await prisma.$transaction(async (tx) => {
+    const result = await prisma.$transaction(
+      async (tx: Prisma.TransactionClient) => {
       const existingEvent = await tx.webhookEvent.findUnique({
         where: {
           eventId,
