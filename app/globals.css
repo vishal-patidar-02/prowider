@@ -1,26 +1,192 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --brand-primary: #0f4c81;
+  --brand-accent: #f97316;
+  --brand-success: #16a34a;
+  --brand-warning: #d97706;
+  --brand-danger: #dc2626;
+  --brand-surface: #f8fafc;
+  --brand-card: #ffffff;
+  --brand-border: #e2e8f0;
+  --brand-text: #1e293b;
+  --brand-muted: #64748b;
+  --background: var(--brand-surface);
+  --foreground: var(--brand-text);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --color-brand-primary: var(--brand-primary);
+  --color-brand-accent: var(--brand-accent);
+  --color-brand-success: var(--brand-success);
+  --color-brand-warning: var(--brand-warning);
+  --color-brand-danger: var(--brand-danger);
+  --color-brand-surface: var(--brand-surface);
+  --color-brand-card: var(--brand-card);
+  --color-brand-border: var(--brand-border);
+  --color-brand-text: var(--brand-text);
+  --color-brand-muted: var(--brand-muted);
+  --font-sans: var(--font-inter);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  background: var(--brand-surface);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-inter), Inter, Arial, Helvetica, sans-serif;
+  min-height: 100vh;
+  margin: 0;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: var(--brand-text);
+  font-weight: 700;
+}
+
+p,
+label,
+input,
+select,
+textarea,
+button,
+a {
+  color: var(--brand-text);
+}
+
+a {
+  text-decoration: none;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button {
+  border: 0;
+  cursor: pointer;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.15s ease;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--brand-primary);
+  outline-offset: 2px;
+}
+
+.card {
+  background: var(--brand-card);
+  border: 1px solid var(--brand-border);
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.surface {
+  background: var(--brand-surface);
+}
+
+.muted-text {
+  color: var(--brand-muted);
+}
+
+.input-base {
+  width: 100%;
+  border: 1.5px solid var(--brand-border);
+  border-radius: 8px;
+  padding: 10px 14px;
+  background: #fff;
+  color: var(--brand-text);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.input-base:focus {
+  border-color: var(--brand-primary);
+}
+
+.button-primary {
+  background: var(--brand-primary);
+  color: #fff;
+}
+
+.button-accent {
+  background: var(--brand-accent);
+  color: #fff;
+}
+
+.button-outline {
+  background: transparent;
+  color: var(--brand-primary);
+  border: 1.5px solid var(--brand-primary);
+}
+
+.badge-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border-radius: 999px;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.skeleton {
+  background: linear-gradient(90deg, #e2e8f0 25%, #f8fafc 37%, #e2e8f0 63%);
+  background-size: 400% 100%;
+  animation: shimmer 1.4s ease infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+
+  100% {
+    background-position: 0 0;
+  }
+}
+
+@keyframes pulse-live {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(1.08);
+    opacity: 0.75;
+  }
+}
+
+.live-pulse {
+  animation: pulse-live 1.5s ease-in-out infinite;
 }
