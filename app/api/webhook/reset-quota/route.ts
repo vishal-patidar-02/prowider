@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { Prisma } from "@prisma/client";
 import eventBus from "@/lib/eventBus";
 import { prisma } from "@/lib/prisma";
 
@@ -78,7 +79,10 @@ export async function POST(request: Request) {
       { status: 200 },
     );
   } catch (error) {
-    if ((error as any)?.code === "P2002") {
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2002"
+    ) {
       return NextResponse.json(
         { message: "already processed" },
         { status: 200 },

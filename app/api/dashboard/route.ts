@@ -1,33 +1,13 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-type DashboardProvider = {
-  id: number;
-  name: string;
-  monthlyQuota: number;
-  leadsReceivedThisMonth: number;
-  assignments: Array<{
-    assignedAt: Date;
-    lead: {
-      id: number;
-      customerName: string;
-      phone: string;
-      city: string;
-      serviceId: number;
-      service: {
-        name: string;
-      };
-    };
-  }>;
-};
-
 export async function GET() {
   try {
     const startOfMonth = new Date();
     startOfMonth.setDate(1);
     startOfMonth.setHours(0, 0, 0, 0);
 
-    const providers: DashboardProvider[] = await prisma.provider.findMany({
+    const providers = await prisma.provider.findMany({
       include: {
         assignments: {
           where: {

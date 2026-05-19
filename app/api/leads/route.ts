@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { Prisma } from "@prisma/client";
 import { assignProviders } from "@/lib/allocate";
 import eventBus from "@/lib/eventBus";
 import { prisma } from "@/lib/prisma";
@@ -35,7 +36,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const lead = (await runWithPrismaRetry(() =>
+    const lead = await runWithPrismaRetry(() =>
       prisma.lead.create({
         data: {
           customerName,
@@ -45,18 +46,18 @@ export async function POST(request: Request) {
           serviceId,
         },
       }),
-    )) as { id: number; serviceId: number };
+    );
 
     let assignedProviders: Awaited<ReturnType<typeof assignProviders>> = [];
 
     try {
       assignedProviders = await assignProviders(lead.id, lead.serviceId);
       eventBus.emit("lead-assigned", { timestamp: Date.now(), leadId: lead.id });
-    } catch (error) {
+    } catch (allocationError) {
       console.error("Lead allocation failed.", {
         leadId: lead.id,
         serviceId: lead.serviceId,
-        error,
+        error: allocationError,
       });
     }
 
@@ -68,8 +69,10 @@ export async function POST(request: Request) {
       { status: 201 },
     );
   } catch (error) {
-    // Handle unique constraint (duplicate lead for same phone+service)
-    if ((error as any)?.code === "P2002") {
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2002"
+    ) {
       return NextResponse.json(
         {
           message: "You have already submitted a request for this service.",

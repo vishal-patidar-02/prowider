@@ -1,25 +1,6 @@
 import eventBus from "@/lib/eventBus";
 import { prisma } from "@/lib/prisma";
 
-type DashboardProvider = {
-  id: number;
-  name: string;
-  monthlyQuota: number;
-  leadsReceivedThisMonth: number;
-  assignments: Array<{
-    assignedAt: Date;
-    lead: {
-      id: number;
-      customerName: string;
-      phone: string;
-      city: string;
-      service: {
-        name: string;
-      };
-    };
-  }>;
-};
-
 export async function GET(request: Request) {
   const stream = new ReadableStream({
     async start(controller) {
@@ -55,9 +36,7 @@ export async function GET(request: Request) {
           },
         });
 
-        const typedProviders = providers as DashboardProvider[];
-
-        return typedProviders.map((provider) => {
+        return providers.map((provider) => {
           const quotaUsed = provider.leadsReceivedThisMonth;
 
           return {
@@ -73,6 +52,7 @@ export async function GET(request: Request) {
                 customerName: assignment.lead.customerName,
                 phone: assignment.lead.phone,
                 city: assignment.lead.city,
+                serviceId: assignment.lead.serviceId,
                 serviceName: assignment.lead.service.name,
                 submittedAt: assignment.assignedAt.toISOString(),
               })),
