@@ -217,13 +217,13 @@ export default function TestToolsPage() {
             label="Reset Quota"
             description="Test provider quota reset for the current month."
             onClick={runResetOnce}
-            disabled={isSubmittingReset || isLoadingProviders || !selectedProvider}
+            disabled={isSubmittingReset || isLoadingProviders}
           />
           <ToolButton
             label="Idempotency Check"
             description="Call the same webhook 5 times with one event ID."
             onClick={runIdempotencyTest}
-            disabled={isSubmittingIdempotency || isLoadingProviders || !selectedProvider}
+            disabled={isSubmittingIdempotency || isLoadingProviders}
           />
           <ToolButton
             label="Concurrent Leads"
@@ -238,11 +238,17 @@ export default function TestToolsPage() {
             <label className="grid gap-2 text-sm font-bold text-brand-text">
               <span className="flex items-center gap-2">
                 {!selectedProviderId && <span className="inline-flex h-2 w-2 rounded-full bg-brand-danger animate-pulse" aria-hidden="true" />}
-                Select provider &#10071;
+                Select provider 
               </span>
               <select
                 value={selectedProviderId}
-                onChange={(event) => setSelectedProviderId(event.target.value)}
+                onChange={(event) => {
+                  setSelectedProviderId(event.target.value);
+                  if (event.target.value) {
+                    setProviderFeedback("");
+                    setIdempotencyLogs([]);
+                  }
+                }}
                 className={`input-base h-11 ${!selectedProviderId ? "border-brand-danger/50 bg-brand-danger/5" : ""}`}
                 disabled={isLoadingProviders}
               >
@@ -284,8 +290,16 @@ export default function TestToolsPage() {
           ) : (
             <div className="card space-y-2 p-4">
               {idempotencyLogs.map((entry, idx) => (
-                <div key={idx} className="rounded-lg bg-brand-surface px-3 py-2 text-xs font-mono text-brand-text">
-                  {entry}
+                <div
+                  key={idx}
+                  className={`rounded-lg px-3 py-2 text-xs font-mono flex items-start gap-2 ${
+                    entry.includes("⚠️")
+                      ? "border border-brand-danger/20 bg-brand-danger/10 text-brand-danger"
+                      : "bg-brand-surface text-brand-text"
+                  }`}
+                >
+                  {entry.includes("⚠️") && <AlertIcon />}
+                  <span>{entry}</span>
                 </div>
               ))}
             </div>
