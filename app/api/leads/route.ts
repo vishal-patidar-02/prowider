@@ -1,4 +1,3 @@
-import { Prisma } from "@prisma/client";
 import { NextResponse } from "next/server";
 import { assignProviders } from "@/lib/allocate";
 import eventBus from "@/lib/eventBus";
@@ -69,10 +68,8 @@ export async function POST(request: Request) {
       { status: 201 },
     );
   } catch (error) {
-    if (
-      error instanceof Prisma.PrismaClientKnownRequestError &&
-      error.code === "P2002"
-    ) {
+    // Handle unique constraint (duplicate lead for same phone+service)
+    if ((error as any)?.code === "P2002") {
       return NextResponse.json(
         {
           message: "You have already submitted a request for this service.",

@@ -1,4 +1,5 @@
-import { Prisma } from "@prisma/client";
+// Avoid importing Prisma namespace for error types because @prisma/client
+// in this workspace doesn't export the Prisma namespace in the build.
 
 const delay = (milliseconds: number) =>
   new Promise((resolve) => setTimeout(resolve, milliseconds));
@@ -15,13 +16,11 @@ export async function runWithPrismaRetry<T>(
     } catch (error) {
       lastError = error;
 
-      if (
-        !(
-          error instanceof Prisma.PrismaClientKnownRequestError &&
-          error.code === "P1001"
-        ) ||
-        attempt === attempts
-      ) {
+      // If it's not a connection error (P1001) or we've exhausted attempts,
+      // rethrow. We cannot reliably use `instanceof Prisma.PrismaClientKnownRequestError`
+      // here because the Prisma namespace may not be available at runtime in some builds,
+      // so check the `code` property instead.
+      if ((error as any)?.code !== "P1001" || attempt === attempts) {
         throw error;
       }
 
