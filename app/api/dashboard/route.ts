@@ -1,20 +1,25 @@
 import { NextResponse } from "next/server";
-import type { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 
-type DashboardProvider = Prisma.ProviderGetPayload<{
-  include: {
-    assignments: {
-      include: {
-        lead: {
-          include: {
-            service: true;
-          };
-        };
+type DashboardProvider = {
+  id: number;
+  name: string;
+  monthlyQuota: number;
+  leadsReceivedThisMonth: number;
+  assignments: Array<{
+    assignedAt: Date;
+    lead: {
+      id: number;
+      customerName: string;
+      phone: string;
+      city: string;
+      serviceId: number;
+      service: {
+        name: string;
       };
     };
-  };
-}>;
+  }>;
+};
 
 export async function GET() {
   try {
